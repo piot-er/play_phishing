@@ -16,4 +16,14 @@ SMS input (sms.jsonl file in sms-ingest/data)
  -> Consent Gate - (consent-gate) - reads from "sms.raw", checks consent in kafka, if consented sends to "sms.filtered"
  -> URL reputation orchestrator (url-reputation-orchestrator) - reads from "sms.filtered", extracts URLs, checks cache (in-memory for now), if not in cache checks Google API, stores in cache, sends results to "sms.processed"
 
-To run: run docker-compose up --build
+To run: 
+```
+docker compose -f 'docker-compose.yml' up -d --build
+```
+
+To grant consent (in a docker network):
+```
+curl -X POST http://consent-service:8080/consents/inbound-sms \
+  -H "Content-Type: application/json" \
+  -d '{"receiver": "234", "text": "TAK"}'
+```
