@@ -50,6 +50,12 @@ services:
 
       kafka-topics --create \
         --if-not-exists \
+        --topic sms.processed \
+        --bootstrap-server kafka:9092 \
+        --partitions 3 --replication-factor 1
+
+      kafka-topics --create \
+        --if-not-exists \
         --topic consent.state \
         --bootstrap-server kafka:9092 \
         --partitions 3 --replication-factor 1 \
@@ -59,6 +65,7 @@ services:
   sms-ingest:
     build:
       context: ./sms-ingest
+    image: kingstiger322/sms-ingest:latest
     depends_on:
       - kafka
     networks:
@@ -84,6 +91,7 @@ services:
 
   consent-service:
     build: ./consent-service
+    image: kingstiger322/consent-service:latest
     depends_on:
       - kafka
       - postgres
@@ -101,6 +109,7 @@ services:
     build:
       context: ./consent-gate
       dockerfile: Dockerfile
+    image: kingstiger322/consent-gate:latest
     depends_on:
       - kafka
     networks:
@@ -115,6 +124,7 @@ services:
     build:
       context: ./url-reputation-orchestrator
       dockerfile: Dockerfile
+    image: kingstiger322/url-rep:latest
     depends_on:
       - kafka
     networks:
